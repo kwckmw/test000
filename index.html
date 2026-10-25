@@ -1,503 +1,552 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>울산 여행 다이어리 (인터랙티브)</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>울산 종이공예 여행</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-        :root {
-            --bg-color: #F7F4EC;
-            --card-bg: #FFFFFF;
-            --primary-red: #A53B2A;
-            --text-dark: #333333;
-            --text-light: #777777;
-            --map-bg: #E5CFB7;
-            --map-shadow: #C9AE94;
-        }
+body {
+  font-family: 'Noto Sans KR', -apple-system, sans-serif;
+  background: #f5f0e8;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Noto Sans KR', sans-serif;
-            user-select: none; /* 드래그 시 텍스트 선택 방지 */
-        }
+.stage {
+  position: relative;
+  width: min(calc(100vw - 40px), calc((100vh - 40px) * 16 / 9), 1200px);
+  aspect-ratio: 16 / 9;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.25), 0 8px 20px rgba(0,0,0,0.15);
+}
 
-        body {
-            background-color: #222;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-        }
+/* ===== 공통 장면 ===== */
+.scene {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 50% 0 50%);
+  will-change: clip-path;
+}
+.scene-inner {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  will-change: transform;
+}
+.scene-inner > * { position: absolute; }
 
-        .app-container {
-            width: 100%;
-            max-width: 420px;
-            height: 100vh;
-            max-height: 900px;
-            background-color: var(--bg-color);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+/* ===== 장면 1 : 태화강 국가정원 ===== */
+.s1 .sky1 {
+  inset: 0;
+  background: linear-gradient(180deg, #b8dce8 0%, #dceef5 60%, #eef7fa 100%);
+}
+.s1 .hill1 {
+  bottom: 28%; left: -10%; right: -10%; height: 30%;
+  background: #8fbf8a;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  box-shadow: inset 0 -6px 0 rgba(0,0,0,0.06);
+}
+.s1 .hill2 {
+  bottom: 26%; left: 20%; right: -20%; height: 22%;
+  background: #7aaf75;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+}
+.s1 .bamboo { inset: 0; }
+.s1 .bamboo span {
+  position: absolute; bottom: 28%; width: 2.2%; border-radius: 3px;
+  background: linear-gradient(90deg, #3d7a2e, #6bab4a 40%, #8cc76a 70%, #3d7a2e);
+  box-shadow: 3px 3px 8px rgba(0,0,0,0.2);
+  transform-origin: bottom center;
+  animation: sway 5s ease-in-out infinite;
+}
+.s1 .bamboo span::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  background: repeating-linear-gradient(180deg, transparent 0 16px, rgba(0,0,0,0.15) 16px 18px);
+}
+@keyframes sway {
+  0%, 100% { transform: rotate(-1deg); }
+  50% { transform: rotate(1.5deg); }
+}
+.s1 .river1 {
+  bottom: 0; left: 0; right: 0; height: 28%;
+  background: linear-gradient(180deg, #7bc4d4 0%, #4a9aad 100%);
+  box-shadow: inset 0 4px 0 rgba(255,255,255,0.35);
+}
 
-        /* 상단 헤더 */
-        .header {
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background-color: rgba(247, 244, 236, 0.95);
-            z-index: 20;
-        }
-        .header-title {
-            font-family: serif;
-            font-style: italic;
-            color: var(--primary-red);
-            font-size: 1.1rem;
-            font-weight: bold;
-        }
-        .header-subtitle {
-            font-size: 0.85rem;
-            color: var(--text-dark);
-            margin-left: 10px;
-        }
-        .search-icon { font-size: 1.2rem; cursor: pointer; }
+/* ===== 장면 2 : 대왕암공원 ===== */
+.s2 .sky2 {
+  inset: 0;
+  background: linear-gradient(180deg, #a5d0e8 0%, #d0e8f0 50%, #e8f2f5 100%);
+}
+.s2 .sun2 {
+  top: 14%; right: 12%; width: 11%; aspect-ratio: 1;
+  background: #fff3c4; border-radius: 50%;
+  box-shadow: 0 0 40px #ffe68a;
+  animation: glow 4s ease-in-out infinite;
+}
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 40px #ffe68a; }
+  50% { box-shadow: 0 0 70px #ffd84d; }
+}
+.s2 .sea2 {
+  bottom: 0; left: 0; right: 0; height: 45%;
+  background: linear-gradient(180deg, #4a9ab8 0%, #2d6a8a 100%);
+}
+.s2 .cliff2 {
+  bottom: 22%; right: -5%; width: 58%; height: 48%;
+  background: #8a6f52;
+  clip-path: polygon(0% 100%, 15% 60%, 30% 50%, 45% 55%, 60% 40%, 80% 45%, 100% 20%, 100% 100%);
+  box-shadow: inset 0 -8px 0 rgba(0,0,0,0.1);
+}
+.s2 .cliff2::after {
+  content: ''; position: absolute; inset: 0;
+  background: #6a5238;
+  clip-path: polygon(0% 100%, 10% 75%, 25% 68%, 40% 78%, 55% 68%, 75% 72%, 100% 55%, 100% 100%);
+  opacity: 0.55;
+}
+.s2 .bridge-svg {
+  bottom: 52%; left: 5%; width: 48%; height: 20%;
+}
+.s2 .pine {
+  bottom: 60%; right: 18%; width: 0; height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 60px solid #2d5a2a;
+  filter: drop-shadow(3px 4px 4px rgba(0,0,0,0.25));
+}
+.s2 .pine::after {
+  content: ''; position: absolute;
+  left: -14px; top: 20px;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-bottom: 50px solid #3a6a36;
+}
 
-        /* 메인 컨텐츠 */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 0 20px 20px 20px;
-            position: relative;
-            overflow: hidden;
-        }
+/* ===== 장면 3 : 간절곶 ===== */
+.s3 .sky3 {
+  inset: 0;
+  background: linear-gradient(180deg, #f5b87a 0%, #f5a3c7 40%, #ffe0b8 100%);
+}
+.s3 .sun3 {
+  bottom: 30%; left: 55%; width: 22%; aspect-ratio: 1;
+  background: radial-gradient(circle at 50% 50%, #fff3b8 0%, #ffd84d 60%, #ffb84d 100%);
+  border-radius: 50%;
+  animation: glow3 3s ease-in-out infinite;
+}
+@keyframes glow3 {
+  0%, 100% { box-shadow: 0 0 60px #ffb84d, 0 0 120px #ff9a3d; }
+  50% { box-shadow: 0 0 90px #ffb84d, 0 0 180px #ff9a3d; }
+}
+.s3 .sea3 {
+  bottom: 0; left: 0; right: 0; height: 32%;
+  background: linear-gradient(180deg, #e09070 0%, #a04a3a 100%);
+}
+.s3 .land3 {
+  bottom: 25%; left: 5%; width: 32%; height: 8%;
+  background: #5a3a2a;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+}
+.s3 .lighthouse {
+  bottom: 32%; left: 15%; width: 5%; height: 26%;
+  background: linear-gradient(180deg,
+    #d94a3a 0 18%, #f5f0e5 18% 36%,
+    #d94a3a 36% 52%, #f5f0e5 52% 100%);
+  clip-path: polygon(15% 0, 85% 0, 100% 100%, 0% 100%);
+  box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
+}
+.s3 .lighthouse::before {
+  content: ''; position: absolute;
+  top: -28%; left: 50%; transform: translateX(-50%);
+  width: 160%; height: 30%;
+  background: #d94a3a;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
 
-        /* 날짜 및 타이틀 */
-        .day-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-            margin-top: 10px;
-            z-index: 15;
-        }
-        .date-badge {
-            width: 60px; height: 70px;
-            background-color: #F9E8E0;
-            border: 1px solid var(--primary-red);
-            border-radius: 8px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: var(--primary-red);
-            position: relative;
-        }
-        .date-badge::before {
-            content: ''; position: absolute; top: 10px; width: 80%; height: 1px;
-            background-color: var(--primary-red); opacity: 0.3;
-        }
-        .date-month { font-size: 0.6rem; margin-top: 5px; }
-        .date-day { font-size: 1.6rem; font-weight: bold; line-height: 1; }
-        .date-year { font-size: 0.6rem; margin-bottom: 5px; }
-        
-        .title-area h2 { font-size: 1.5rem; color: var(--text-dark); margin-bottom: 5px; transition: 0.3s; }
-        .title-area .day-text { font-size: 0.8rem; color: var(--primary-red); font-weight: 500; margin-bottom: 8px; display: block; }
-        .title-area p { font-size: 0.85rem; color: var(--text-light); line-height: 1.4; word-break: keep-all; transition: 0.3s;}
+/* ===== 장면 4 : 반구대 암각화 ===== */
+.s4 .sky4 {
+  inset: 0;
+  background: linear-gradient(180deg, #c8d8e0 0%, #e8eef0 100%);
+}
+.s4 .rock4 {
+  bottom: 12%; left: 8%; right: 8%; height: 68%;
+  background: linear-gradient(180deg, #b5a48a 0%, #8a7a62 100%);
+  border-radius: 18% 22% 12% 18% / 12% 14% 10% 14%;
+  box-shadow: inset 0 -25px 50px rgba(0,0,0,0.18), 8px 10px 24px rgba(0,0,0,0.25);
+}
+.s4 .petro {
+  inset: 14% 18%;
+  width: 64%; height: 50%;
+  opacity: 0.75;
+}
+.s4 .river4 {
+  bottom: 0; left: 0; right: 0; height: 13%;
+  background: linear-gradient(180deg, #6aa0b8 0%, #4a7a95 100%);
+}
 
-        /* 🌟 지도 영역 (드래그 가능) */
-        .map-section {
-            flex: 1;
-            position: relative;
-            border-radius: 15px;
-            overflow: hidden;
-            background-color: var(--map-bg);
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
-            cursor: grab; /* 잡기 커서 */
-        }
-        .map-section:active { cursor: grabbing; }
+/* ===== 장면 5 : 장생포 고래문화마을 ===== */
+.s5 .sky5 {
+  inset: 0;
+  background: linear-gradient(180deg, #b5dcf0 0%, #e3f2fa 100%);
+}
+.s5 .hill5 {
+  bottom: 15%; left: -10%; right: -10%; height: 40%;
+  background: #7ec48a;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+}
+.s5 .hill5b {
+  bottom: 12%; left: 30%; right: -30%; height: 30%;
+  background: #5aa86a;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+}
+.s5 .whale {
+  top: 20%; left: 12%; width: 42%; height: 18%;
+  background: linear-gradient(180deg, #4a6a8a, #2d4a6a);
+  border-radius: 60% 40% 45% 55% / 55% 60% 40% 45%;
+  transform: rotate(-8deg);
+  box-shadow: 6px 8px 20px rgba(0,0,0,0.25);
+  animation: swim 6s ease-in-out infinite;
+}
+@keyframes swim {
+  0%, 100% { transform: rotate(-8deg) translateY(0); }
+  50% { transform: rotate(-6deg) translateY(-8px); }
+}
+.s5 .whale::before {
+  content: ''; position: absolute;
+  right: -12%; top: 15%;
+  width: 28%; height: 70%;
+  background: #3a5a7a;
+  clip-path: polygon(0 50%, 100% 0, 85% 50%, 100% 100%);
+}
+.s5 .whale::after {
+  content: ''; position: absolute;
+  left: 12%; top: 40%;
+  width: 6%; height: 14%;
+  background: #fff; border-radius: 50%;
+  box-shadow: inset -2px 0 0 #2a2a2a;
+}
+.s5 .houses { inset: 0; }
+.s5 .house {
+  position: absolute;
+  width: 8%;
+  background: var(--c, #e8a0a0);
+  box-shadow: 3px 3px 8px rgba(0,0,0,0.25);
+  border-radius: 2px;
+}
+.s5 .house::before {
+  content: ''; position: absolute;
+  top: -50%; left: -10%; right: -10%;
+  height: 100%;
+  background: #8a4a3a;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.2));
+}
 
-        /* 지도 내부 세계 (이 요소가 움직입니다) */
-        .map-world {
-            position: absolute;
-            width: 200%; /* 넉넉하게 크기 설정 */
-            height: 200%;
-            top: -50%; left: -50%;
-            transform-origin: center center;
-            transition: transform 0.1s ease-out; /* 부드러운 이동 */
-        }
+/* ===== 장면 6 : 울산대공원 ===== */
+.s6 .sky6 {
+  inset: 0;
+  background: linear-gradient(180deg, #b5dcf0 0%, #e3f2fa 100%);
+}
+.s6 .lake6 {
+  bottom: 0; left: 0; right: 0; height: 30%;
+  background: linear-gradient(180deg, #7ec8e0 0%, #4a9ab8 100%);
+  box-shadow: inset 0 4px 0 rgba(255,255,255,0.35);
+}
+.s6 .grass6 {
+  bottom: 25%; left: -5%; right: -5%; height: 20%;
+  background: #7ec48a;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  box-shadow: inset 0 -6px 0 rgba(0,0,0,0.08);
+}
+.s6 .roses { inset: 0; }
+.s6 .rose {
+  position: absolute;
+  aspect-ratio: 1;
+  background: radial-gradient(circle at 30% 30%, #ffc4d8, #d94a7a 70%);
+  border-radius: 50%;
+  box-shadow: 2px 3px 6px rgba(0,0,0,0.25);
+}
+.s6 .rose::before {
+  content: ''; position: absolute;
+  top: 90%; left: 50%;
+  width: 2px; height: 40px;
+  background: #4a8a3a;
+  transform: translateX(-50%);
+  z-index: -1;
+}
 
-        /* 3D 배경 그리드 */
-        .map-bg-3d {
-            position: absolute;
-            width: 100%; height: 100%;
-            background-image: 
-                linear-gradient(rgba(201, 174, 148, 0.4) 2px, transparent 2px),
-                linear-gradient(90deg, rgba(201, 174, 148, 0.4) 2px, transparent 2px);
-            background-size: 50px 50px;
-            transform: rotateX(60deg) rotateZ(-45deg);
-            pointer-events: none; /* 배경이 마우스 이벤트를 가로채지 않도록 */
-        }
+/* ===== 오버레이 ===== */
+.grain {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  z-index: 9000;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
 
-        /* 가상의 3D 건물 */
-        .building {
-            position: absolute;
-            background-color: #D3B79A;
-            box-shadow: 8px 8px 0px var(--map-shadow);
-            border-radius: 4px;
-            pointer-events: none;
-        }
-        .b1 { width: 120px; height: 80px; top: 20%; left: 10%; }
-        .b2 { width: 180px; height: 120px; top: 40%; left: 50%; background-color: #DFC6AE; }
-        .b3 { width: 80px; height: 150px; top: 10%; left: 60%; }
-        .b4 { width: 150px; height: 70px; top: 70%; left: 20%; background-color: #E8D5C4; }
-        .b5 { width: 100px; height: 100px; top: 80%; left: 70%; background-color: #C9AE94; }
+.subtitle {
+  position: absolute;
+  bottom: 11%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  padding: 0.65em 1.6em;
+  background: rgba(255,255,255,0.94);
+  border-radius: 12px;
+  font-size: clamp(13px, 1.6vw, 22px);
+  font-weight: 700;
+  color: #2a2a2a;
+  letter-spacing: 0.02em;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.22);
+  white-space: nowrap;
+  z-index: 9001;
+  opacity: 0;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.subtitle.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 
-        /* 🌟 지도 위 핀 (지도와 함께 움직임) */
-        .map-pin {
-            position: absolute;
-            background-color: var(--primary-red);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            display: flex; align-items: center; gap: 8px;
-            box-shadow: 0 4px 10px rgba(165, 59, 42, 0.4);
-            cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
-            border: 2px solid white;
-            z-index: 10;
-        }
-        .map-pin:hover {
-            transform: scale(1.1);
-            background-color: #C74833;
-        }
-        .map-pin::after {
-            content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
-            border-width: 6px 6px 0; border-style: solid; border-color: var(--primary-red) transparent transparent transparent;
-        }
-        .pin-number {
-            background-color: white; color: var(--primary-red);
-            width: 18px; height: 18px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; font-size: 0.7rem;
-        }
+.brand {
+  position: absolute;
+  top: 5%; left: 3%;
+  color: rgba(255,255,255,0.95);
+  font-size: clamp(11px, 1.2vw, 16px);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.45);
+  z-index: 9002;
+}
 
-        /* 핀 위치 */
-        .pin-taehwa { top: 40%; left: 25%; }
-        .pin-daewangam { top: 25%; left: 60%; }
-        .pin-jangsaengpo { top: 60%; left: 45%; }
-
-        /* 상단 위치 정보 카드 (고정) */
-        .location-card {
-            position: absolute;
-            top: 20px; left: 20px;
-            background: var(--card-bg);
-            padding: 12px 20px 12px 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            z-index: 10;
-            pointer-events: none; /* 카드가 드래그를 방해하지 않게 함 */
-            transition: opacity 0.3s;
-        }
-        .location-card .pin-icon { color: var(--primary-red); font-size: 1.2rem; margin-bottom: 5px; }
-        .location-card h3 { font-size: 1rem; color: var(--text-dark); margin-bottom: 3px; }
-        .location-card p { font-size: 0.7rem; color: var(--text-light); }
-
-        /* 🌟 지도 컨트롤 버튼 (작동함) */
-        .map-controls {
-            position: absolute;
-            top: 20px; right: 20px;
-            display: flex; flex-direction: column;
-            background: rgba(255,255,255,0.95);
-            border-radius: 8px; overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            z-index: 15;
-        }
-        .map-controls button {
-            border: none; background: transparent; padding: 10px 14px;
-            font-size: 1.2rem; cursor: pointer; color: var(--text-dark);
-            border-bottom: 1px solid #eee;
-            transition: background 0.2s;
-        }
-        .map-controls button:hover { background: #f0f0f0; }
-        .map-controls button:last-child { border-bottom: none; }
-
-        /* 하단 버튼들 */
-        .map-bottom-btns {
-            position: absolute; bottom: 20px; left: 20px; right: 20px;
-            display: flex; gap: 10px; z-index: 15; pointer-events: none;
-        }
-        .map-btn {
-            background: white; border: none; padding: 10px 15px;
-            border-radius: 8px; font-size: 0.8rem; color: var(--text-dark);
-            font-weight: 500; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            display: flex; align-items: center; gap: 6px; cursor: pointer;
-            pointer-events: auto;
-        }
-        .map-btn.active { background-color: #2C5C56; color: white; }
-
-        /* 우측 액션 버튼 */
-        .side-actions {
-            position: absolute; right: 15px; bottom: 100px;
-            display: flex; flex-direction: column; gap: 15px; z-index: 15;
-        }
-        .action-btn {
-            display: flex; flex-direction: column; align-items: center;
-            background: transparent; border: none; cursor: pointer; color: var(--text-dark);
-        }
-        .action-icon { font-size: 1.5rem; margin-bottom: 3px; text-shadow: 0 2px 4px rgba(255,255,255,0.8); }
-        .action-text { font-size: 0.65rem; font-weight: 500; text-shadow: 0 2px 4px rgba(255,255,255,0.8); }
-        
-        /* 하단 네비게이션 */
-        .bottom-nav {
-            position: absolute; bottom: 0; width: 100%; height: 60px;
-            background-color: #111; display: flex; justify-content: space-around; align-items: center;
-            z-index: 30;
-        }
-        .nav-item { color: #888; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .nav-item.active { color: white; }
-        .nav-icon { font-size: 1.2rem; }
-
-    </style>
+.progress {
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 4px; width: 0;
+  background: linear-gradient(90deg, #f5a3c7, #7fc7e8);
+  z-index: 9003;
+}
+</style>
 </head>
 <body>
 
-    <div class="app-container">
-        
-        <div class="header">
-            <div style="display:flex; align-items:center;">
-                <span style="font-size:1.5rem; margin-right:10px; cursor:pointer;">☰</span>
-                <span class="header-title">Diari de viatge</span>
-                <span class="header-subtitle">/ 10월의 여행 지도</span>
-            </div>
-            <div class="search-icon">🔍</div>
-        </div>
+<div class="stage" id="stage">
 
-        <div class="main-content">
-            
-            <div class="day-info">
-                <div class="date-badge">
-                    <span class="date-month">OCTUBRE</span>
-                    <span class="date-day">15</span>
-                    <span class="date-year">2024</span>
-                </div>
-                <div class="title-area">
-                    <span class="day-text" id="day-text">DAY 01 10월 15일 화요일</span>
-                    <h2 id="main-title">태화강 국가정원</h2>
-                    <p id="main-desc">도심 속 자연을 만끽하며 울산의 첫인상을 만나요.</p>
-                </div>
-            </div>
-
-            <!-- 지도 영역 -->
-            <div class="map-section" id="map-section">
-                
-                <!-- 드래그되는 지도 월드 -->
-                <div class="map-world" id="map-world">
-                    <div class="map-bg-3d">
-                        <div class="building b1"></div>
-                        <div class="building b2"></div>
-                        <div class="building b3"></div>
-                        <div class="building b4"></div>
-                        <div class="building b5"></div>
-                    </div>
-
-                    <!-- 핀들 -->
-                    <div class="map-pin pin-taehwa" onclick="changeLocation(event, 'taehwa')">
-                        <span class="pin-number">1</span> 태화강 국가정원
-                    </div>
-                    <div class="map-pin pin-daewangam" onclick="changeLocation(event, 'daewangam')">
-                        <span class="pin-number">2</span> 대왕암공원
-                    </div>
-                    <div class="map-pin pin-jangsaengpo" onclick="changeLocation(event, 'jangsaengpo')">
-                        <span class="pin-number">3</span> 장생포 고래마을
-                    </div>
-                </div>
-
-                <!-- 고정 UI 요소들 -->
-                <div class="location-card" id="info-card">
-                    <div class="pin-icon">📍</div>
-                    <h3 id="card-title">태화강 국가정원</h3>
-                    <p id="card-coords">35.5489° N · 129.2967° E</p>
-                </div>
-
-                <div class="map-controls">
-                    <button id="zoom-in" title="확대">+</button>
-                    <button id="zoom-out" title="축소">-</button>
-                    <button id="reset-map" title="초기화">🔄</button>
-                </div>
-
-                <div class="side-actions">
-                    <button class="action-btn"><span class="action-icon">🤍</span><span class="action-text">좋아요</span></button>
-                    <button class="action-btn"><span class="action-icon">💬</span><span class="action-text">0</span></button>
-                    <button class="action-btn"><span class="action-icon">🔖</span><span class="action-text">저장</span></button>
-                </div>
-
-                <div class="map-bottom-btns">
-                    <button class="map-btn">🎯 오늘 동선</button>
-                    <button class="map-btn active">🗺️ 3D 지도</button>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="bottom-nav">
-            <div class="nav-item active"><span class="nav-icon">🏠</span><span>홈</span></div>
-            <div class="nav-item"><span class="nav-icon">▶️</span><span>Shorts</span></div>
-            <div class="nav-item"><span class="nav-icon" style="font-size:1.5rem;">➕</span></div>
-            <div class="nav-item"><span class="nav-icon">📺</span><span>구독</span></div>
-            <div class="nav-item"><span class="nav-icon">👤</span><span>내 페이지</span></div>
-        </div>
-
+  <!-- 1. 태화강 국가정원 -->
+  <div class="scene" data-i="0">
+    <div class="scene-inner s1">
+      <div class="sky1"></div>
+      <div class="hill1"></div>
+      <div class="hill2"></div>
+      <div class="bamboo"></div>
+      <div class="river1"></div>
     </div>
+  </div>
 
-    <script>
-        // --- 관광지 데이터 ---
-        const ulSanSpots = {
-            taehwa: {
-                title: '태화강 국가정원',
-                coords: '35.5489° N · 129.2967° E',
-                desc: '도심 속 십리대숲과 계절별 아름다운 꽃들이 어우러진 울산의 대표 휴식처입니다.',
-                dayText: 'DAY 01 10월 15일 화요일'
-            },
-            daewangam: {
-                title: '대왕암공원',
-                coords: '35.4912° N · 129.4403° E',
-                desc: '울창한 송림과 기암괴석, 푸른 동해 바다가 만나는 낭만적인 해안 산책로입니다.',
-                dayText: 'DAY 02 10월 16일 수요일'
-            },
-            jangsaengpo: {
-                title: '장생포 고래문화마을',
-                coords: '35.5035° N · 129.3809° E',
-                desc: '1960년대 포경 전성시대의 모습을 고스란히 재현한 이색 테마 마을입니다.',
-                dayText: 'DAY 03 10월 17일 목요일'
-            }
-        };
+  <!-- 2. 대왕암공원 -->
+  <div class="scene" data-i="1">
+    <div class="scene-inner s2">
+      <div class="sky2"></div>
+      <div class="sun2"></div>
+      <div class="sea2"></div>
+      <svg class="bridge-svg" viewBox="0 0 400 100" preserveAspectRatio="none">
+        <path d="M 20 20 Q 200 0 380 20" stroke="#c43e3e" stroke-width="4" fill="none"/>
+        <line x1="20" y1="20" x2="20" y2="80" stroke="#c43e3e" stroke-width="2"/>
+        <line x1="380" y1="20" x2="380" y2="80" stroke="#c43e3e" stroke-width="2"/>
+        <line x1="100" y1="14" x2="100" y2="60" stroke="#c43e3e" stroke-width="1.5"/>
+        <line x1="200" y1="10" x2="200" y2="55" stroke="#c43e3e" stroke-width="1.5"/>
+        <line x1="300" y1="14" x2="300" y2="60" stroke="#c43e3e" stroke-width="1.5"/>
+      </svg>
+      <div class="cliff2"></div>
+      <div class="pine"></div>
+    </div>
+  </div>
 
-        // --- UI 업데이트 함수 ---
-        function changeLocation(event, spotKey) {
-            // 드래그 동작 중일 때는 클릭 이벤트 무시
-            if (isDragging) return; 
-            
-            // 이벤트 버블링 방지 (지도 드래그로 번지지 않게)
-            if(event) event.stopPropagation();
+  <!-- 3. 간절곶 -->
+  <div class="scene" data-i="2">
+    <div class="scene-inner s3">
+      <div class="sky3"></div>
+      <div class="sun3"></div>
+      <div class="sea3"></div>
+      <div class="land3"></div>
+      <div class="lighthouse"></div>
+    </div>
+  </div>
 
-            const spot = ulSanSpots[spotKey];
-            
-            const mainTitle = document.getElementById('main-title');
-            const mainDesc = document.getElementById('main-desc');
-            const cardTitle = document.getElementById('card-title');
-            const cardCoords = document.getElementById('card-coords');
-            const dayText = document.getElementById('day-text');
+  <!-- 4. 반구대 암각화 -->
+  <div class="scene" data-i="3">
+    <div class="scene-inner s4">
+      <div class="sky4"></div>
+      <div class="rock4"></div>
+      <svg class="petro" viewBox="0 0 200 120" preserveAspectRatio="xMidYMid meet">
+        <g fill="#4a3a2a" opacity="0.8">
+          <!-- 고래 -->
+          <path d="M 20 40 Q 35 28 50 34 Q 58 28 66 34 Q 72 40 64 48 Q 50 54 36 48 Q 28 46 20 40 Z"/>
+          <!-- 사슴 -->
+          <path d="M 110 50 L 114 34 L 116 22 L 120 30 L 124 26 L 121 38 L 126 50 L 123 58 L 119 58 L 119 78 L 115 78 L 115 58 L 112 58 Z"/>
+          <!-- 물고기 -->
+          <path d="M 150 80 Q 160 72 175 80 Q 160 88 150 80 M 175 80 L 182 74 M 175 80 L 182 86"/>
+          <!-- 사람 -->
+          <path d="M 60 80 L 60 70 M 60 70 L 56 60 M 60 70 L 64 60 M 60 70 L 56 80 M 60 70 L 64 80" stroke="#4a3a2a" stroke-width="2.5" fill="none"/>
+          <!-- 새 -->
+          <path d="M 90 30 Q 95 25 100 30 M 100 30 Q 105 25 110 30" stroke="#4a3a2a" stroke-width="2" fill="none"/>
+        </g>
+      </svg>
+      <div class="river4"></div>
+    </div>
+  </div>
 
-            mainTitle.style.opacity = 0;
-            mainDesc.style.opacity = 0;
-            cardTitle.style.opacity = 0;
+  <!-- 5. 장생포 고래문화마을 -->
+  <div class="scene" data-i="4">
+    <div class="scene-inner s5">
+      <div class="sky5"></div>
+      <div class="whale"></div>
+      <div class="hill5"></div>
+      <div class="hill5b"></div>
+      <div class="houses"></div>
+    </div>
+  </div>
 
-            setTimeout(() => {
-                mainTitle.textContent = spot.title;
-                mainDesc.textContent = spot.desc;
-                cardTitle.textContent = spot.title;
-                cardCoords.textContent = spot.coords;
-                dayText.textContent = spot.dayText;
+  <!-- 6. 울산대공원 -->
+  <div class="scene" data-i="5">
+    <div class="scene-inner s6">
+      <div class="sky6"></div>
+      <div class="lake6"></div>
+      <div class="grass6"></div>
+      <div class="roses"></div>
+    </div>
+  </div>
 
-                mainTitle.style.opacity = 1;
-                mainDesc.style.opacity = 1;
-                cardTitle.style.opacity = 1;
-            }, 200);
-        }
+  <div class="grain"></div>
+  <div class="brand">울산 · 종이공예 여행</div>
+  <div class="subtitle" id="subtitle"></div>
+  <div class="progress" id="progress"></div>
+</div>
 
-        // --- 🌟 지도 드래그 및 줌 컨트롤 로직 ---
-        const mapSection = document.getElementById('map-section');
-        const mapWorld = document.getElementById('map-world');
-        
-        let isDragging = false;
-        let startX, startY;
-        let currentX = 0, currentY = 0;
-        let scale = 1;
+<script>
+const scenes = document.querySelectorAll('.scene');
+const subtitle = document.getElementById('subtitle');
+const progress = document.getElementById('progress');
 
-        // 마우스 다운 (드래그 시작)
-        mapSection.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            startX = e.clientX - currentX;
-            startY = e.clientY - currentY;
-            mapWorld.style.transition = 'none'; // 드래그 중에는 딜레이 없앰
-        });
+const CAPTIONS = [
+  '도심 속 십리대숲 · 태화강 국가정원',
+  '바다 위 출렁다리 · 대왕암공원',
+  '가장 먼저 해가 뜨는 곳 · 간절곶',
+  '선사시대의 숨결 · 반구암 각화',
+  '고래와 함께하는 마을 · 장생포',
+  '장미와 호수의 쉼표 · 울산대공원'
+];
 
-        // 마우스 무브 (드래그 중)
-        window.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            currentX = e.clientX - startX;
-            currentY = e.clientY - startY;
-            updateMapTransform();
-        });
+const DURATION = 6000;
+const TRANSITION = 1000;
 
-        // 마우스 업 (드래그 종료)
-        window.addEventListener('mouseup', () => {
-            isDragging = false;
-            mapWorld.style.transition = 'transform 0.3s ease-out'; // 복귀 시 부드럽게
-        });
+let z = 0;
+let idx = 0;
+let subTimer;
 
-        // 터치 지원 (모바일)
-        mapSection.addEventListener('touchstart', (e) => {
-            isDragging = true;
-            startX = e.touches[0].clientX - currentX;
-            startY = e.touches[0].clientY - currentY;
-            mapWorld.style.transition = 'none';
-        });
-        window.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            currentX = e.touches[0].clientX - startX;
-            currentY = e.touches[0].clientY - startY;
-            updateMapTransform();
-            // 스크롤 방지
-            if(e.cancelable) e.preventDefault(); 
-        }, { passive: false });
-        window.addEventListener('touchend', () => {
-            isDragging = false;
-            mapWorld.style.transition = 'transform 0.3s ease-out';
-        });
+/* 대나무 생성 */
+const bambooCont = document.querySelector('.s1 .bamboo');
+for (let i = 0; i < 14; i++) {
+  const b = document.createElement('span');
+  b.style.left = (2 + i * 7 + (Math.random() * 2 - 1)) + '%';
+  b.style.height = (65 + Math.random() * 25) + '%';
+  b.style.animationDelay = (-Math.random() * 5) + 's';
+  bambooCont.appendChild(b);
+}
 
-        // 줌 인/아웃 버튼
-        document.getElementById('zoom-in').addEventListener('click', () => {
-            scale += 0.2;
-            if (scale > 2.5) scale = 2.5; // 최대 확대 제한
-            updateMapTransform();
-        });
+/* 장미 생성 */
+const rosesCont = document.querySelector('.s6 .roses');
+const roseColors = [
+  'radial-gradient(circle at 30% 30%, #ffc4d8, #d94a7a 70%)',
+  'radial-gradient(circle at 30% 30%, #ffd8c4, #e06a4a 70%)',
+  'radial-gradient(circle at 30% 30%, #fff0c4, #e0a04a 70%)',
+  'radial-gradient(circle at 30% 30%, #f5c4ff, #a04ad9 70%)'
+];
+for (let i = 0; i < 14; i++) {
+  const r = document.createElement('span');
+  r.className = 'rose';
+  r.style.left = (5 + Math.random() * 88) + '%';
+  r.style.bottom = (15 + Math.random() * 28) + '%';
+  r.style.width = (2.5 + Math.random() * 2.5) + '%';
+  r.style.background = roseColors[i % roseColors.length];
+  rosesCont.appendChild(r);
+}
 
-        document.getElementById('zoom-out').addEventListener('click', () => {
-            scale -= 0.2;
-            if (scale < 0.6) scale = 0.6; // 최소 축소 제한
-            updateMapTransform();
-        });
+/* 집 생성 */
+const housesCont = document.querySelector('.s5 .houses');
+const houseColors = ['#f5a3a3','#f5d3a3','#a3d3f5','#a3f5c3','#d3a3f5','#f5c3a3','#f5f0a3','#a3f5f0'];
+for (let i = 0; i < 8; i++) {
+  const h = document.createElement('span');
+  h.className = 'house';
+  h.style.left = (8 + i * 11) + '%';
+  h.style.bottom = (18 + (i % 3) * 7) + '%';
+  h.style.height = (12 + (i % 4) * 3) + '%';
+  h.style.setProperty('--c', houseColors[i % houseColors.length]);
+  housesCont.appendChild(h);
+}
 
-        // 지도 초기화 버튼
-        document.getElementById('reset-map').addEventListener('click', () => {
-            currentX = 0;
-            currentY = 0;
-            scale = 1;
-            mapWorld.style.transition = 'transform 0.5s ease-out';
-            updateMapTransform();
-        });
+function showScene(i) {
+  const scene = scenes[i];
+  const inner = scene.querySelector('.scene-inner');
 
-        // CSS Transform 적용 함수
-        function updateMapTransform() {
-            // X, Y 이동과 스케일을 동시에 적용
-            mapWorld.style.transform = `translate(${currentX}px, ${currentY}px) scale(${scale})`;
-        }
+  /* 기존 애니메이션 초기화 */
+  scene.getAnimations().forEach(a => a.cancel());
+  inner.getAnimations().forEach(a => a.cancel());
 
-        // 텍스트 트랜지션용 CSS 추가
-        const style = document.createElement('style');
-        style.innerHTML = `
-            #main-title, #main-desc, #card-title, #card-coords { transition: opacity 0.2s ease-in-out; }
-        `;
-        document.head.appendChild(style);
+  /* 초기 상태 */
+  scene.style.clipPath = 'inset(0 50% 0 50%)';
+  scene.style.zIndex = ++z;
+  void scene.offsetWidth;
 
-    </script>
+  /* 커튼 열림 (중앙 → 좌우) */
+  scene.animate(
+    [
+      { clipPath: 'inset(0 50% 0 50%)' },
+      { clipPath: 'inset(0 0% 0 0%)' }
+    ],
+    { duration: TRANSITION, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'forwards' }
+  );
+
+  /* 줌인 */
+  inner.animate(
+    [
+      { transform: 'scale(1)' },
+      { transform: 'scale(1.25)' }
+    ],
+    { duration: DURATION + TRANSITION, easing: 'ease-out', fill: 'forwards' }
+  );
+
+  /* 자막 */
+  clearTimeout(subTimer);
+  subtitle.classList.remove('show');
+  subTimer = setTimeout(() => {
+    subtitle.textContent = CAPTIONS[i];
+    subtitle.classList.add('show');
+  }, TRANSITION * 0.5);
+
+  /* 진행바 */
+  progress.getAnimations().forEach(a => a.cancel());
+  void progress.offsetWidth;
+  progress.animate(
+    [{ width: '0%' }, { width: '100%' }],
+    { duration: DURATION, easing: 'linear', fill: 'forwards' }
+  );
+}
+
+function tick() {
+  showScene(idx);
+  idx = (idx + 1) % scenes.length;
+}
+
+tick();
+setInterval(tick, DURATION);
+</script>
 </body>
 </html>
