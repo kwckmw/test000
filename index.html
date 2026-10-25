@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>울산 여행 다이어리</title>
+    <title>울산 여행 다이어리 (인터랙티브)</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
 
-        /* 기본 스타일 및 컬러 팔레트 (이미지 참고) */
         :root {
             --bg-color: #F7F4EC;
             --card-bg: #FFFFFF;
@@ -23,17 +22,18 @@
             margin: 0;
             padding: 0;
             font-family: 'Noto Sans KR', sans-serif;
+            user-select: none; /* 드래그 시 텍스트 선택 방지 */
         }
 
         body {
-            background-color: #222; /* 바깥 배경 (앱 프레임 강조용) */
+            background-color: #222;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            overflow: hidden;
         }
 
-        /* 모바일 앱 화면을 모방한 컨테이너 */
         .app-container {
             width: 100%;
             max-width: 420px;
@@ -53,8 +53,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background-color: rgba(247, 244, 236, 0.9);
-            z-index: 10;
+            background-color: rgba(247, 244, 236, 0.95);
+            z-index: 20;
         }
         .header-title {
             font-family: serif;
@@ -68,89 +68,49 @@
             color: var(--text-dark);
             margin-left: 10px;
         }
-        .search-icon {
-            font-size: 1.2rem;
-            color: var(--text-dark);
-            cursor: pointer;
-        }
+        .search-icon { font-size: 1.2rem; cursor: pointer; }
 
-        /* 메인 컨텐츠 영역 */
+        /* 메인 컨텐츠 */
         .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
             padding: 0 20px 20px 20px;
             position: relative;
+            overflow: hidden;
         }
 
-        /* 날짜 및 타이틀 정보 */
+        /* 날짜 및 타이틀 */
         .day-info {
             display: flex;
             align-items: center;
             gap: 15px;
             margin-bottom: 15px;
             margin-top: 10px;
+            z-index: 15;
         }
-
-        /* 달력 모양 뱃지 */
         .date-badge {
-            width: 60px;
-            height: 70px;
+            width: 60px; height: 70px;
             background-color: #F9E8E0;
             border: 1px solid var(--primary-red);
             border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
             color: var(--primary-red);
             position: relative;
         }
         .date-badge::before {
-            content: '';
-            position: absolute;
-            top: 10px;
-            width: 80%;
-            height: 1px;
-            background-color: var(--primary-red);
-            opacity: 0.3;
+            content: ''; position: absolute; top: 10px; width: 80%; height: 1px;
+            background-color: var(--primary-red); opacity: 0.3;
         }
-        .date-month {
-            font-size: 0.6rem;
-            letter-spacing: 1px;
-            margin-top: 5px;
-        }
-        .date-day {
-            font-size: 1.6rem;
-            font-weight: bold;
-            line-height: 1;
-        }
-        .date-year {
-            font-size: 0.6rem;
-            margin-bottom: 5px;
-        }
+        .date-month { font-size: 0.6rem; margin-top: 5px; }
+        .date-day { font-size: 1.6rem; font-weight: bold; line-height: 1; }
+        .date-year { font-size: 0.6rem; margin-bottom: 5px; }
+        
+        .title-area h2 { font-size: 1.5rem; color: var(--text-dark); margin-bottom: 5px; transition: 0.3s; }
+        .title-area .day-text { font-size: 0.8rem; color: var(--primary-red); font-weight: 500; margin-bottom: 8px; display: block; }
+        .title-area p { font-size: 0.85rem; color: var(--text-light); line-height: 1.4; word-break: keep-all; transition: 0.3s;}
 
-        .title-area h2 {
-            font-size: 1.6rem;
-            color: var(--text-dark);
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-        .title-area .day-text {
-            font-size: 0.8rem;
-            color: var(--primary-red);
-            font-weight: 500;
-            margin-bottom: 8px;
-            display: block;
-        }
-        .title-area p {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            line-height: 1.4;
-            word-break: keep-all;
-        }
-
-        /* 지도 영역 */
+        /* 🌟 지도 영역 (드래그 가능) */
         .map-section {
             flex: 1;
             position: relative;
@@ -158,65 +118,47 @@
             overflow: hidden;
             background-color: var(--map-bg);
             box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
-            /* 3D 지도 느낌을 위한 CSS 배경 */
-            perspective: 1000px;
+            cursor: grab; /* 잡기 커서 */
+        }
+        .map-section:active { cursor: grabbing; }
+
+        /* 지도 내부 세계 (이 요소가 움직입니다) */
+        .map-world {
+            position: absolute;
+            width: 200%; /* 넉넉하게 크기 설정 */
+            height: 200%;
+            top: -50%; left: -50%;
+            transform-origin: center center;
+            transition: transform 0.1s ease-out; /* 부드러운 이동 */
         }
 
-        /* 가상의 3D 지도 블록들 */
+        /* 3D 배경 그리드 */
         .map-bg-3d {
             position: absolute;
-            width: 200%;
-            height: 200%;
-            top: -50%;
-            left: -50%;
+            width: 100%; height: 100%;
             background-image: 
-                linear-gradient(rgba(201, 174, 148, 0.5) 2px, transparent 2px),
-                linear-gradient(90deg, rgba(201, 174, 148, 0.5) 2px, transparent 2px);
-            background-size: 40px 40px;
+                linear-gradient(rgba(201, 174, 148, 0.4) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(201, 174, 148, 0.4) 2px, transparent 2px);
+            background-size: 50px 50px;
             transform: rotateX(60deg) rotateZ(-45deg);
-            transition: transform 0.3s ease;
+            pointer-events: none; /* 배경이 마우스 이벤트를 가로채지 않도록 */
         }
 
-        /* 가상의 건물(입체감) */
+        /* 가상의 3D 건물 */
         .building {
             position: absolute;
             background-color: #D3B79A;
-            box-shadow: 5px 5px 0px var(--map-shadow);
+            box-shadow: 8px 8px 0px var(--map-shadow);
             border-radius: 4px;
+            pointer-events: none;
         }
-        .b1 { width: 80px; height: 60px; top: 20%; left: 10%; }
-        .b2 { width: 120px; height: 80px; top: 40%; left: 50%; background-color: #DFC6AE; }
-        .b3 { width: 60px; height: 100px; top: 10%; left: 60%; }
-        .b4 { width: 100px; height: 50px; top: 70%; left: 20%; background-color: #E8D5C4; }
+        .b1 { width: 120px; height: 80px; top: 20%; left: 10%; }
+        .b2 { width: 180px; height: 120px; top: 40%; left: 50%; background-color: #DFC6AE; }
+        .b3 { width: 80px; height: 150px; top: 10%; left: 60%; }
+        .b4 { width: 150px; height: 70px; top: 70%; left: 20%; background-color: #E8D5C4; }
+        .b5 { width: 100px; height: 100px; top: 80%; left: 70%; background-color: #C9AE94; }
 
-        /* 플로팅 위치 정보 카드 */
-        .location-card {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: var(--card-bg);
-            padding: 12px 20px 12px 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            z-index: 10;
-            transition: all 0.3s ease;
-        }
-        .location-card .pin-icon {
-            color: var(--primary-red);
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-        }
-        .location-card h3 {
-            font-size: 1rem;
-            color: var(--text-dark);
-            margin-bottom: 3px;
-        }
-        .location-card p {
-            font-size: 0.7rem;
-            color: var(--text-light);
-        }
-
-        /* 지도 위 핀(마커) */
+        /* 🌟 지도 위 핀 (지도와 함께 움직임) */
         .map-pin {
             position: absolute;
             background-color: var(--primary-red);
@@ -225,147 +167,100 @@
             border-radius: 8px;
             font-size: 0.85rem;
             font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            display: flex; align-items: center; gap: 8px;
             box-shadow: 0 4px 10px rgba(165, 59, 42, 0.4);
             cursor: pointer;
-            z-index: 5;
-            transition: transform 0.2s;
+            transition: transform 0.2s, background 0.2s;
             border: 2px solid white;
+            z-index: 10;
         }
         .map-pin:hover {
-            transform: scale(1.05);
+            transform: scale(1.1);
+            background-color: #C74833;
         }
         .map-pin::after {
-            content: '';
-            position: absolute;
-            bottom: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-width: 6px 6px 0;
-            border-style: solid;
-            border-color: var(--primary-red) transparent transparent transparent;
+            content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
+            border-width: 6px 6px 0; border-style: solid; border-color: var(--primary-red) transparent transparent transparent;
         }
         .pin-number {
-            background-color: white;
-            color: var(--primary-red);
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 0.7rem;
+            background-color: white; color: var(--primary-red);
+            width: 18px; height: 18px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; font-size: 0.7rem;
         }
 
-        /* 핀 위치 지정 */
-        .pin-taehwa { top: 50%; left: 20%; }
-        .pin-daewangam { top: 30%; left: 60%; }
-        .pin-jangsaengpo { top: 70%; left: 40%; }
+        /* 핀 위치 */
+        .pin-taehwa { top: 40%; left: 25%; }
+        .pin-daewangam { top: 25%; left: 60%; }
+        .pin-jangsaengpo { top: 60%; left: 45%; }
 
-        /* 지도 조작 버튼 (우측 상단) */
+        /* 상단 위치 정보 카드 (고정) */
+        .location-card {
+            position: absolute;
+            top: 20px; left: 20px;
+            background: var(--card-bg);
+            padding: 12px 20px 12px 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            z-index: 10;
+            pointer-events: none; /* 카드가 드래그를 방해하지 않게 함 */
+            transition: opacity 0.3s;
+        }
+        .location-card .pin-icon { color: var(--primary-red); font-size: 1.2rem; margin-bottom: 5px; }
+        .location-card h3 { font-size: 1rem; color: var(--text-dark); margin-bottom: 3px; }
+        .location-card p { font-size: 0.7rem; color: var(--text-light); }
+
+        /* 🌟 지도 컨트롤 버튼 (작동함) */
         .map-controls {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            background: rgba(255,255,255,0.9);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            z-index: 10;
+            top: 20px; right: 20px;
+            display: flex; flex-direction: column;
+            background: rgba(255,255,255,0.95);
+            border-radius: 8px; overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 15;
         }
         .map-controls button {
-            border: none;
-            background: transparent;
-            padding: 8px 12px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: var(--text-dark);
+            border: none; background: transparent; padding: 10px 14px;
+            font-size: 1.2rem; cursor: pointer; color: var(--text-dark);
             border-bottom: 1px solid #eee;
+            transition: background 0.2s;
         }
+        .map-controls button:hover { background: #f0f0f0; }
         .map-controls button:last-child { border-bottom: none; }
 
-        /* 하단 지도 버튼들 */
+        /* 하단 버튼들 */
         .map-bottom-btns {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            display: flex;
-            gap: 10px;
-            z-index: 10;
+            position: absolute; bottom: 20px; left: 20px; right: 20px;
+            display: flex; gap: 10px; z-index: 15; pointer-events: none;
         }
         .map-btn {
-            background: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            color: var(--text-dark);
-            font-weight: 500;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
+            background: white; border: none; padding: 10px 15px;
+            border-radius: 8px; font-size: 0.8rem; color: var(--text-dark);
+            font-weight: 500; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex; align-items: center; gap: 6px; cursor: pointer;
+            pointer-events: auto;
         }
-        .map-btn.active {
-            background-color: #2C5C56; /* 청록색 포인트 */
-            color: white;
-        }
+        .map-btn.active { background-color: #2C5C56; color: white; }
 
-        /* 우측 사이드 액션 버튼 (소셜) */
+        /* 우측 액션 버튼 */
         .side-actions {
-            position: absolute;
-            right: 15px;
-            bottom: 120px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            z-index: 10;
+            position: absolute; right: 15px; bottom: 100px;
+            display: flex; flex-direction: column; gap: 15px; z-index: 15;
         }
         .action-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            color: var(--text-dark);
+            display: flex; flex-direction: column; align-items: center;
+            background: transparent; border: none; cursor: pointer; color: var(--text-dark);
         }
-        .action-icon {
-            font-size: 1.5rem;
-            margin-bottom: 3px;
-            text-shadow: 0 2px 4px rgba(255,255,255,0.8);
-        }
-        .action-text {
-            font-size: 0.65rem;
-            font-weight: 500;
-        }
+        .action-icon { font-size: 1.5rem; margin-bottom: 3px; text-shadow: 0 2px 4px rgba(255,255,255,0.8); }
+        .action-text { font-size: 0.65rem; font-weight: 500; text-shadow: 0 2px 4px rgba(255,255,255,0.8); }
         
-        /* 하단 네비게이션 바 (Mockup) */
+        /* 하단 네비게이션 */
         .bottom-nav {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 60px;
-            background-color: #111;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 20;
+            position: absolute; bottom: 0; width: 100%; height: 60px;
+            background-color: #111; display: flex; justify-content: space-around; align-items: center;
+            z-index: 30;
         }
-        .nav-item {
-            color: #888;
-            font-size: 0.7rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
+        .nav-item { color: #888; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .nav-item.active { color: white; }
         .nav-icon { font-size: 1.2rem; }
 
@@ -375,7 +270,6 @@
 
     <div class="app-container">
         
-        <!-- 상단 헤더 -->
         <div class="header">
             <div style="display:flex; align-items:center;">
                 <span style="font-size:1.5rem; margin-right:10px; cursor:pointer;">☰</span>
@@ -385,10 +279,8 @@
             <div class="search-icon">🔍</div>
         </div>
 
-        <!-- 메인 컨텐츠 -->
         <div class="main-content">
             
-            <!-- 날짜 및 타이틀 정보 -->
             <div class="day-info">
                 <div class="date-badge">
                     <span class="date-month">OCTUBRE</span>
@@ -396,105 +288,76 @@
                     <span class="date-year">2024</span>
                 </div>
                 <div class="title-area">
-                    <span class="day-text">DAY 01 10월 15일 화요일</span>
-                    <h2 id="main-title">태화강 · 국가정원</h2>
+                    <span class="day-text" id="day-text">DAY 01 10월 15일 화요일</span>
+                    <h2 id="main-title">태화강 국가정원</h2>
                     <p id="main-desc">도심 속 자연을 만끽하며 울산의 첫인상을 만나요.</p>
                 </div>
             </div>
 
             <!-- 지도 영역 -->
-            <div class="map-section">
-                <!-- 3D 느낌의 배경 -->
-                <div class="map-bg-3d">
-                    <div class="building b1"></div>
-                    <div class="building b2"></div>
-                    <div class="building b3"></div>
-                    <div class="building b4"></div>
+            <div class="map-section" id="map-section">
+                
+                <!-- 드래그되는 지도 월드 -->
+                <div class="map-world" id="map-world">
+                    <div class="map-bg-3d">
+                        <div class="building b1"></div>
+                        <div class="building b2"></div>
+                        <div class="building b3"></div>
+                        <div class="building b4"></div>
+                        <div class="building b5"></div>
+                    </div>
+
+                    <!-- 핀들 -->
+                    <div class="map-pin pin-taehwa" onclick="changeLocation(event, 'taehwa')">
+                        <span class="pin-number">1</span> 태화강 국가정원
+                    </div>
+                    <div class="map-pin pin-daewangam" onclick="changeLocation(event, 'daewangam')">
+                        <span class="pin-number">2</span> 대왕암공원
+                    </div>
+                    <div class="map-pin pin-jangsaengpo" onclick="changeLocation(event, 'jangsaengpo')">
+                        <span class="pin-number">3</span> 장생포 고래마을
+                    </div>
                 </div>
 
-                <!-- 상단 위치 정보 카드 -->
+                <!-- 고정 UI 요소들 -->
                 <div class="location-card" id="info-card">
                     <div class="pin-icon">📍</div>
                     <h3 id="card-title">태화강 국가정원</h3>
                     <p id="card-coords">35.5489° N · 129.2967° E</p>
                 </div>
 
-                <!-- 지도 컨트롤 (+, -, 나침반) -->
                 <div class="map-controls">
-                    <button>+</button>
-                    <button>-</button>
-                    <button>▲</button>
+                    <button id="zoom-in" title="확대">+</button>
+                    <button id="zoom-out" title="축소">-</button>
+                    <button id="reset-map" title="초기화">🔄</button>
                 </div>
 
-                <!-- 지도 위 관광지 핀 (클릭 시 데이터 변경) -->
-                <div class="map-pin pin-taehwa" onclick="changeLocation('taehwa')">
-                    <span class="pin-number">1</span> 태화강 국가정원
-                </div>
-                <div class="map-pin pin-daewangam" onclick="changeLocation('daewangam')">
-                    <span class="pin-number">2</span> 대왕암공원
-                </div>
-                <div class="map-pin pin-jangsaengpo" onclick="changeLocation('jangsaengpo')">
-                    <span class="pin-number">3</span> 장생포 고래마을
-                </div>
-
-                <!-- 우측 소셜 액션 버튼 -->
                 <div class="side-actions">
-                    <button class="action-btn">
-                        <span class="action-icon">🤍</span>
-                        <span class="action-text">좋아요</span>
-                    </button>
-                    <button class="action-btn">
-                        <span class="action-icon">💬</span>
-                        <span class="action-text">0</span>
-                    </button>
-                    <button class="action-btn">
-                        <span class="action-icon">🔖</span>
-                        <span class="action-text">저장</span>
-                    </button>
-                    <button class="action-btn">
-                        <span class="action-icon">↗️</span>
-                        <span class="action-text">공유</span>
-                    </button>
+                    <button class="action-btn"><span class="action-icon">🤍</span><span class="action-text">좋아요</span></button>
+                    <button class="action-btn"><span class="action-icon">💬</span><span class="action-text">0</span></button>
+                    <button class="action-btn"><span class="action-icon">🔖</span><span class="action-text">저장</span></button>
                 </div>
 
-                <!-- 하단 지도 버튼 -->
                 <div class="map-bottom-btns">
                     <button class="map-btn">🎯 오늘 동선</button>
-                    <button class="map-btn active">🗺️ 3D</button>
-                    <button class="map-btn">🔄 둘러보기</button>
+                    <button class="map-btn active">🗺️ 3D 지도</button>
                 </div>
 
             </div>
         </div>
 
-        <!-- 하단 네비게이션 (Mockup) -->
         <div class="bottom-nav">
-            <div class="nav-item active">
-                <span class="nav-icon">🏠</span>
-                <span>홈</span>
-            </div>
-            <div class="nav-item">
-                <span class="nav-icon">▶️</span>
-                <span>Shorts</span>
-            </div>
-            <div class="nav-item">
-                <span class="nav-icon" style="font-size:1.5rem;">➕</span>
-            </div>
-            <div class="nav-item">
-                <span class="nav-icon">📺</span>
-                <span>구독</span>
-            </div>
-            <div class="nav-item">
-                <span class="nav-icon">👤</span>
-                <span>내 페이지</span>
-            </div>
+            <div class="nav-item active"><span class="nav-icon">🏠</span><span>홈</span></div>
+            <div class="nav-item"><span class="nav-icon">▶️</span><span>Shorts</span></div>
+            <div class="nav-item"><span class="nav-icon" style="font-size:1.5rem;">➕</span></div>
+            <div class="nav-item"><span class="nav-icon">📺</span><span>구독</span></div>
+            <div class="nav-item"><span class="nav-icon">👤</span><span>내 페이지</span></div>
         </div>
 
     </div>
 
-    <!-- 인터랙션 스크립트 -->
     <script>
-        // 울산 관광지 데이터 객체
+        // --- 관광지 데이터 ---
         const ulSanSpots = {
             taehwa: {
                 title: '태화강 국가정원',
@@ -516,43 +379,122 @@
             }
         };
 
-        // 핀 클릭 시 화면 정보 업데이트 함수
-        function changeLocation(spotKey) {
+        // --- UI 업데이트 함수 ---
+        function changeLocation(event, spotKey) {
+            // 드래그 동작 중일 때는 클릭 이벤트 무시
+            if (isDragging) return; 
+            
+            // 이벤트 버블링 방지 (지도 드래그로 번지지 않게)
+            if(event) event.stopPropagation();
+
             const spot = ulSanSpots[spotKey];
             
-            // DOM 요소 가져오기
             const mainTitle = document.getElementById('main-title');
             const mainDesc = document.getElementById('main-desc');
             const cardTitle = document.getElementById('card-title');
             const cardCoords = document.getElementById('card-coords');
-            const dayText = document.querySelector('.day-text');
+            const dayText = document.getElementById('day-text');
 
-            // 텍스트 변경 (페이드 효과를 위한 약간의 딜레이)
-            cardTitle.style.opacity = 0;
-            cardCoords.style.opacity = 0;
             mainTitle.style.opacity = 0;
             mainDesc.style.opacity = 0;
+            cardTitle.style.opacity = 0;
 
             setTimeout(() => {
-                mainTitle.textContent = spot.title.split(' ')[0] + ' · ' + (spot.title.split(' ')[1] || '');
+                mainTitle.textContent = spot.title;
                 mainDesc.textContent = spot.desc;
                 cardTitle.textContent = spot.title;
                 cardCoords.textContent = spot.coords;
                 dayText.textContent = spot.dayText;
 
-                cardTitle.style.opacity = 1;
-                cardCoords.style.opacity = 1;
                 mainTitle.style.opacity = 1;
                 mainDesc.style.opacity = 1;
-            }, 150); // CSS transition과 맞물려 부드럽게 변경됨
+                cardTitle.style.opacity = 1;
+            }, 200);
         }
 
-        // 텍스트 트랜지션을 위한 CSS 추가 적용
+        // --- 🌟 지도 드래그 및 줌 컨트롤 로직 ---
+        const mapSection = document.getElementById('map-section');
+        const mapWorld = document.getElementById('map-world');
+        
+        let isDragging = false;
+        let startX, startY;
+        let currentX = 0, currentY = 0;
+        let scale = 1;
+
+        // 마우스 다운 (드래그 시작)
+        mapSection.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX - currentX;
+            startY = e.clientY - currentY;
+            mapWorld.style.transition = 'none'; // 드래그 중에는 딜레이 없앰
+        });
+
+        // 마우스 무브 (드래그 중)
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            currentX = e.clientX - startX;
+            currentY = e.clientY - startY;
+            updateMapTransform();
+        });
+
+        // 마우스 업 (드래그 종료)
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            mapWorld.style.transition = 'transform 0.3s ease-out'; // 복귀 시 부드럽게
+        });
+
+        // 터치 지원 (모바일)
+        mapSection.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            startX = e.touches[0].clientX - currentX;
+            startY = e.touches[0].clientY - currentY;
+            mapWorld.style.transition = 'none';
+        });
+        window.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            currentX = e.touches[0].clientX - startX;
+            currentY = e.touches[0].clientY - startY;
+            updateMapTransform();
+            // 스크롤 방지
+            if(e.cancelable) e.preventDefault(); 
+        }, { passive: false });
+        window.addEventListener('touchend', () => {
+            isDragging = false;
+            mapWorld.style.transition = 'transform 0.3s ease-out';
+        });
+
+        // 줌 인/아웃 버튼
+        document.getElementById('zoom-in').addEventListener('click', () => {
+            scale += 0.2;
+            if (scale > 2.5) scale = 2.5; // 최대 확대 제한
+            updateMapTransform();
+        });
+
+        document.getElementById('zoom-out').addEventListener('click', () => {
+            scale -= 0.2;
+            if (scale < 0.6) scale = 0.6; // 최소 축소 제한
+            updateMapTransform();
+        });
+
+        // 지도 초기화 버튼
+        document.getElementById('reset-map').addEventListener('click', () => {
+            currentX = 0;
+            currentY = 0;
+            scale = 1;
+            mapWorld.style.transition = 'transform 0.5s ease-out';
+            updateMapTransform();
+        });
+
+        // CSS Transform 적용 함수
+        function updateMapTransform() {
+            // X, Y 이동과 스케일을 동시에 적용
+            mapWorld.style.transform = `translate(${currentX}px, ${currentY}px) scale(${scale})`;
+        }
+
+        // 텍스트 트랜지션용 CSS 추가
         const style = document.createElement('style');
         style.innerHTML = `
-            #main-title, #main-desc, #card-title, #card-coords {
-                transition: opacity 0.2s ease-in-out;
-            }
+            #main-title, #main-desc, #card-title, #card-coords { transition: opacity 0.2s ease-in-out; }
         `;
         document.head.appendChild(style);
 
